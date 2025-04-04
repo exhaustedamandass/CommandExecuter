@@ -1,0 +1,55 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:CommandExecuter.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:CommandExecuter.Converters"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="CommandExecuter.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="CommandExecuter">
+
+    <Window.Resources>
+        <converters:OutputTypeToBrushConverter x:Key="OutputTypeToBrushConverter"/>
+    </Window.Resources>
+        
+    <Window.DataContext>
+        <vm:MainWindowViewModel />
+    </Window.DataContext>
+
+        <Grid Margin="15" RowDefinitions="Auto, Auto, *" ColumnDefinitions="Auto, *">
+                <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.Row="0" Spacing="10" Margin="0, 0, 0, 5">
+                        <TextBox CornerRadius="10" Width="400" Text="{Binding ShellCommand}" Watermark="Shell script" />
+                        <Button Command="{Binding ExecuteShellCommandAsyncCommand}"
+                                Content="Execute" 
+                                CommandParameter="{Binding ShellCommand}"/>
+                </StackPanel>
+                
+                <Border Grid.Column="1" Grid.Row="2"
+                        CornerRadius="10" Padding="5"
+                        BorderThickness="1" BorderBrush="{DynamicResource SystemAccentColor}">
+                        <Grid ColumnDefinitions="*,Auto">
+                                <ScrollViewer x:Name="ResultsScrollViewer"
+                                        VerticalScrollBarVisibility="Auto"
+                                              HorizontalScrollBarVisibility="Disabled"
+                                              Margin="5">
+                                        <ItemsControl Margin="5"
+                                                      ItemsSource="{Binding ShellCommandResults}" >
+                                                <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                                <TextBlock Text="{Binding Text}"
+                                                                           Foreground="{Binding OutputType, 
+                                                                           Converter={StaticResource OutputTypeToBrushConverter}}" />
+                                                        </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                </ScrollViewer>
+                                <Button Grid.Column="1"
+                                        VerticalAlignment="Stretch" VerticalContentAlignment="Center"
+                                        Background="Transparent"
+                                        Command="{Binding ShellCommandResults.Clear}"
+                                        Content="❌"/>
+                        </Grid>
+                </Border>
+        </Grid>
+</Window>
